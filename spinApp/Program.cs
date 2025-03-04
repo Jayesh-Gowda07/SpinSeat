@@ -21,7 +21,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<AppDbContext>(options =>
         options.UseSqlServer(builder.Configuration.GetConnectionString("spinAppDefaultConnection")));
 // Program.cs
-builder.WebHost.UseUrls("http://*:8080");
+
 
 var app = builder.Build();
 
