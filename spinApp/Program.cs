@@ -48,7 +48,7 @@ if (app.Environment.IsDevelopment())
 
 
 app.UseForwardedHeaders();
-app.UseHttpsRedirection();
+/*app.UseHttpsRedirection();*/
 
 app.UseAuthorization();
 
