@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  spinapp:
+    image: ${DOCKER_REGISTRY-}spinapp
+    build:
+      context: .
+      dockerfile: spinApp\Dockerfile
