@@ -35,8 +35,11 @@ builder.Services.Configure<ForwardedHeadersOptions>(options => {
 
 builder.Services.AddDbContext<AppDbContext>(options =>
         options.UseSqlServer(builder.Configuration.GetConnectionString("spinAppDefaultConnection")));
+// Program.cs
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+builder.WebHost.UseUrls($"https://*:{port}");
 
-builder.WebHost.UseUrls("http://*:8080");
+builder.WebHost.UseUrls("https://*:8080");
 
 var app = builder.Build();
 
