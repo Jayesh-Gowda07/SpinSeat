@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.HttpOverrides;
 using Npgsql.EntityFrameworkCore.PostgreSQL;
+using spinApp.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,6 +41,8 @@ builder.Services.Configure<ForwardedHeadersOptions>(options => {
 
 builder.Services.AddDbContext<AppDbContext>(options =>
         options.UseNpgsql(builder.Configuration.GetConnectionString("spinAppDefaultConnection")));
+
+builder.Services.AddHostedService<DailyCleanupService>();
 
 var app = builder.Build();
 
