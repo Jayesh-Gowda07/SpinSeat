@@ -23,28 +23,37 @@ namespace spinApp.Controllers
             using var transaction = await _context.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
             try
             {
-                // Existing checks
+                // Normalize input name for case-insensitive comparison
+                var normalizedName = user.Name.Trim().ToUpperInvariant();
+
+                // Check for existing user with case-insensitive comparison
                 var existingUser = await _context.Users
-                    .FirstOrDefaultAsync(u => u.Name == user.Name);
+                    .FirstOrDefaultAsync(u => EF.Functions.ILike(u.Name, normalizedName));
 
                 if (existingUser != null)
                 {
                     return existingUser;
                 }
 
+                // Enforce 11-user limit with transaction-level lock
                 var userCount = await _context.Users.CountAsync();
                 if (userCount >= 11)
                 {
                     return BadRequest("Maximum 11 users allowed. Cannot create new user.");
                 }
 
-                // Create user
-                user.Id = Guid.NewGuid();
-                _context.Users.Add(user);
+                // Create new user with original case preservation
+                var newUser = new User
+                {
+                    Id = Guid.NewGuid(),
+                    Name = user.Name.Trim() // Preserve original case
+                };
+
+                _context.Users.Add(newUser);
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
 
-                return CreatedAtAction(nameof(PostUser), new { id = user.Id }, user);
+                return CreatedAtAction(nameof(PostUser), new { id = newUser.Id }, newUser);
             }
             catch
             {

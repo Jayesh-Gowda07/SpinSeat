@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.HttpOverrides;
+using Npgsql.EntityFrameworkCore.PostgreSQL;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,7 +39,7 @@ builder.Services.Configure<ForwardedHeadersOptions>(options => {
 
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-        options.UseSqlServer(builder.Configuration.GetConnectionString("spinAppDefaultConnection")));
+        options.UseNpgsql(builder.Configuration.GetConnectionString("spinAppDefaultConnection")));
 
 var app = builder.Build();
 
@@ -59,8 +60,8 @@ else
 
 
 
-var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
-app.Urls.Add($"http://*:{port}");
+/*var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+app.Urls.Add($"http://*:{port}");*/
 app.UseForwardedHeaders();
 /*app.UseHttpsRedirection();*/
 

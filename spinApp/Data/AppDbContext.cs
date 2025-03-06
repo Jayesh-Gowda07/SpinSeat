@@ -23,9 +23,19 @@ namespace spinApp.Data
                 .HasIndex(dn => new { dn.UserId, dn.Date })
                 .IsUnique();
 
-            modelBuilder.Entity<User>()
-                .HasIndex(u => u.Name)
-                .IsUnique();
+            modelBuilder.Entity<User>(entity =>
+            {
+                entity.HasIndex(u => u.Name)
+                    .IsUnique()
+                    .HasOperators("citext_ops"); // No leading space
+
+                entity.Property(u => u.Name)
+                    .HasColumnType("citext")
+                    .HasConversion(
+                        v => v.ToUpperInvariant(), // Store normalized
+                        v => v // Return original
+                    );
+            });
         }
     }
 }

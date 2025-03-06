@@ -31,23 +31,22 @@ namespace spinApp.Controllers
             using var transaction = await _context.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
             try
             {
-                var user = await _context.Users.FindAsync(userId);
-                if (user == null) return NotFound("User not found");
-
                 var today = DateTime.UtcNow.Date;
-                if (await _context.DailyNumbers.AnyAsync(dn => dn.UserId == userId && dn.Date == today))
-                    return Conflict("Already spun today");
+                var existing = await _context.DailyNumbers
+                    .AnyAsync(dn => dn.UserId == userId && dn.Date == today);
+
+                if (existing) throw new InvalidOperationException("Already generated today");
 
                 var usedNumbers = await _context.DailyNumbers
                     .Where(dn => dn.Date == today)
                     .Select(dn => dn.Number)
                     .ToListAsync();
 
-                var availableNumbers = Enumerable.Range(1, 11).Except(usedNumbers).ToList();
-                if (availableNumbers.Count == 0) return BadRequest("No numbers left");
+                var availableNumbers = Enumerable.Range(1, 11)
+                    .Except(usedNumbers)
+                    .ToList();
 
-                var random = new Random();
-                var selectedNumber = availableNumbers[random.Next(availableNumbers.Count)];
+                var selectedNumber = availableNumbers[new Random().Next(availableNumbers.Count)];
 
                 _context.DailyNumbers.Add(new DailyNumber
                 {
