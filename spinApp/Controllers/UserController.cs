@@ -65,18 +65,18 @@ namespace spinApp.Controllers
         public async Task<ActionResult<IEnumerable<UserWithSeatDto>>> GetAllUsersWithSeats()
         {
             var users = await _context.Users
-                .Select(u => new UserWithSeatDto
-                {
-                    Id = u.Id,
-                    Name = u.Name,
-                    SeatNumber = _context.DailyNumbers
-                        .Where(dn => dn.UserId == u.Id && dn.Date == DateTime.UtcNow.Date)
-                        .Select(dn => dn.Number)
-                        .FirstOrDefault()
-                })
-                .ToListAsync();
+        .Select(u => new UserWithSeatDto
+        {
+            Id = u.Id,
+            Name = u.Name,
+            SeatNumber = _context.DailyNumbers
+                .Where(dn => dn.UserId == u.Id && dn.Date == DateTime.UtcNow.Date)
+                .Select(dn => (int?)dn.Number) // Cast to nullable int
+                .FirstOrDefault()
+        })
+        .ToListAsync();
 
-            return Ok(users);
+    return Ok(users);
         }
 
     }

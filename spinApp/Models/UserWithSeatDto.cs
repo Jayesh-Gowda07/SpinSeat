@@ -4,6 +4,6 @@
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
-        public int? SeatNumber { get; set; }
+        public int? SeatNumber { get; set; } // Nullable int
     }
 }
